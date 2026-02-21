@@ -1,0 +1,12 @@
+[
+  {
+    "id": "S001",
+    "stage": "BASIC",
+    "priority": 1
+  },
+  {
+    "id": "S002",
+    "stage": "ADVANCED",
+    "priority": 2
+  }
+]
