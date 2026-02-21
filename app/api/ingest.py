@@ -50,8 +50,15 @@ def roster_generate(db: Session = Depends(get_db)):
     roster = generate_roster(db)
 
     return {
-        "week_start": "2026-02-21",
-        "base_icao": "VOBG",
-        "roster": roster,
-        "unassigned": []
+    "week_start": "2026-02-21",
+    "base_icao": "VOBG",
+    "roster": roster,
+    "unassigned": [],
+    "decision_summary": {
+        "strategy": "weather-first safety dispatch",
+        "primary_constraints": [
+            "weather minima",
+            "no double booking"
+        ]
     }
+}

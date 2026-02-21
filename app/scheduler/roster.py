@@ -18,6 +18,7 @@ def generate_roster(db):
         return [
             {
                 "date": "2026-02-21",
+                "needs_replan": True,
                 "slots": [
                     {
                         "slot_id": "D1-S1",
@@ -27,7 +28,8 @@ def generate_roster(db):
                         "resource_id": "SIM01",
                         "dispatch_decision": "NEEDS_REVIEW",
                         "reasons": ["WEATHER_UNAVAILABLE"],
-                        "citations": ["rules:weather_minima#fallback"]
+                        "citations": ["rules:weather_minima#fallback"],
+                        "score": 0
                     }
                 ]
             }
@@ -51,6 +53,16 @@ def generate_roster(db):
             activity = "SIM"
             reasons = ["WX_BELOW_MINIMA", "SIM_SUBSTITUTION"]
 
+        # -------- LEVEL-2 SCORING (FAST TRACK) --------
+        score = 100
+
+        if activity == "SIM":
+            score -= 20
+
+        if decision == "NO_GO":
+            score -= 30
+        # ----------------------------------------------
+
         roster.append({
             "slot_id": f"D1-S{i+1}",
             "activity": activity,
@@ -59,12 +71,21 @@ def generate_roster(db):
             "resource_id": "SIM01" if activity == "SIM" else "AC01",
             "dispatch_decision": decision,
             "reasons": reasons,
-            "citations": ["rules:weather_minima#chunk1"]
+            "citations": ["rules:weather_minima#chunk1"],
+            "score": score
         })
+
+    # -------- LEVEL-2 REPLANNING TRIGGER --------
+    needs_replan = any(
+        slot["dispatch_decision"] == "NO_GO"
+        for slot in roster
+    )
+    # --------------------------------------------
 
     return [
         {
             "date": "2026-02-21",
+            "needs_replan": needs_replan,
             "slots": roster
         }
     ]
